@@ -1,35 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import {Box, Button, Flex, Heading, Text, TextArea} from "@radix-ui/themes";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [textInput, setTextInput] = useState("");
+    const [textOutput, setTextOutput] = useState("");
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const translate = () => {
+        console.log(`Inside translate with textInput: ${textInput}`);
+        // TODO: Call translate API and setTextOutput based on response
+        setTextOutput(textInput);
+    };
+
+    const handleWordClick = (word: string) => {
+        console.log(`Inside handleWordClick with word: ${word}`);
+    };
+
+    return (
+      <Flex
+          className="flexRoot"
+          direction="column"
+          align="stretch"
+          gap="2"
+          style={{ background: "lightgray" }}>
+          <Box style={{ background: "crimson" }}>
+              <Heading mb="1" size="7">Greektionary</Heading>
+          </Box>
+          <Box flexGrow="1" style={{ background: "beige" }}>
+              <TextArea
+                  className="textInput"
+                  size="3"
+                  resize="none"
+                  placeholder="Enter text"
+                  onChange={e => setTextInput(e.target.value)}/>
+          </Box>
+          <Box style={{ background: "lightcyan" }}>
+              <Button onClick={translate}>
+                  Translate
+              </Button>
+          </Box>
+          <Box flexBasis="50%" style={{ background: "azure" }}>
+              <Box
+                  className="textOutput"
+                  style={{ background: "darkorange"}}>
+                  <Flex
+                      className="wordItems"
+                      gap="2"
+                      wrap="wrap">
+                      {textOutput && textOutput.split(" ").map((val, index) => {
+                          return (
+                              <Text
+                                  key={index}
+                                  size="6"
+                                  onClick={() => handleWordClick(val)}>
+                                  {val}
+                              </Text>
+                          );
+                      })}
+                  </Flex>
+              </Box>
+          </Box>
+      </Flex>
+    )
 }
 
 export default App
