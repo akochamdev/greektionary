@@ -1,19 +1,34 @@
 import { useState } from 'react';
+import * as axios from "axios";
 import './App.css';
-import {Box, Button, Flex, Heading, Text, TextArea} from "@radix-ui/themes";
+import { Box, Button, Flex, Heading, Text, TextArea } from "@radix-ui/themes";
 
 function App() {
     const [textInput, setTextInput] = useState("");
     const [textOutput, setTextOutput] = useState("");
 
-    const translate = () => {
-        console.log(`Inside translate with textInput: ${textInput}`);
-        // TODO: Call translate API and setTextOutput based on response
-        setTextOutput(textInput);
+    const translateText = async () => {
+        if (!textInput) {
+            return;
+        }
+
+        const url = `https://translation.googleapis.com/language/translate/v2?key=${process.env.API_KEY}`;
+        const data = {
+            q: textInput,
+            source: "en",
+            target: "el",
+            format: "text"
+        };
+        const result = await axios.default.post(url, data);
+        if (result?.status === 200 && result?.data?.data?.translations?.length > 0) {
+            setTextOutput(result.data.data.translations[0].translatedText);
+        } else {
+            console.error(`Received error from translate API (${result?.status}): `, result);
+        }
     };
 
     const handleWordClick = (word: string) => {
-        console.log(`Inside handleWordClick with word: ${word}`);
+        window.open(`https://en.wiktionary.org/wiki/${word}`);
     };
 
     return (
@@ -21,12 +36,11 @@ function App() {
           className="flexRoot"
           direction="column"
           align="stretch"
-          gap="2"
-          style={{ background: "lightgray" }}>
-          <Box style={{ background: "crimson" }}>
+          gap="5">
+          <Box>
               <Heading mb="1" size="7">Greektionary</Heading>
           </Box>
-          <Box flexGrow="1" style={{ background: "beige" }}>
+          <Box flexGrow="1">
               <TextArea
                   className="textInput"
                   size="3"
@@ -34,15 +48,13 @@ function App() {
                   placeholder="Enter text"
                   onChange={e => setTextInput(e.target.value)}/>
           </Box>
-          <Box style={{ background: "lightcyan" }}>
-              <Button onClick={translate}>
+          <Box>
+              <Button onClick={translateText}>
                   Translate
               </Button>
           </Box>
-          <Box flexBasis="50%" style={{ background: "azure" }}>
-              <Box
-                  className="textOutput"
-                  style={{ background: "darkorange"}}>
+          <Box flexBasis="50%">
+              <Box className="textOutput">
                   <Flex
                       className="wordItems"
                       gap="2"
